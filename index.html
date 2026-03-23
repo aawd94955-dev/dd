@@ -32,9 +32,9 @@
 </div>
 
 <script>
-    const URL = 'https://gzhesjteggilonfclviy.supabase.co';
-    const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6aGVzanRlZ2dpbG9uZmNsdml5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxNjE2MTEsImV4cCI6MjA4OTczNzYxMX0.8ZwIClCJ3bOU_zhAl0uAiBTEJGvKaDl9G8DrLgkX5HA';
-    
+    const SUPABASE_URL = 'https://gzhesjteggilonfclviy.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6aGVzanRlZ2dpbG9uZmNsdml5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxNjE2MTEsImV4cCI6MjA4OTczNzYxMX0.8ZwIClCJ3bOU_zhAl0uAiBTEJGvKaDl9G8DrLgkX5HA';
+
     let client;
     let cachedData = [];
 
@@ -43,15 +43,14 @@
             alert("라이브러리 로드 실패!");
             return;
         }
-        client = window.supabase.createClient(URL, KEY);
+        client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         await fetchData();
     };
 
     async function fetchData() {
         try {
-            // .table('경고')를 .from('경고')로 수정했습니다!
             const { data, error } = await client
-                .from('경고') 
+                .from('경고')
                 .select('*')
                 .order('created_at', { ascending: false });
 
@@ -72,7 +71,7 @@
         }
         const header = document.getElementById('tableHeader');
         const body = document.getElementById('tableBody');
-        
+
         header.innerHTML = Object.keys(data[0]).map(k => `<th>${k}</th>`).join('');
         body.innerHTML = data.map(row => `<tr>${Object.values(row).map(v => `<td>${v}</td>`).join('')}</tr>`).join('');
     }
