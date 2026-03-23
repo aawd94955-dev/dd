@@ -1,0 +1,58 @@
+<script>
+    // 변수 이름을 supabaseClient로 변경해서 충돌 방지
+    const SUPABASE_URL = 'https://gzhesjteggilonfclviy.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6aGVzanRlZ2dpbG9uZmNsdml5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxNjE2MTEsImV4cCI6MjA4OTczNzYxMX0.8ZwIClCJ3bOU_zhAl0uAiBTEJGvKaDl9G8DrLgkX5HA';
+    
+    // 여기 변수명을 supabaseClient로 수정함
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let cachedData = [];
+
+    async function fetchData() {
+        const { data, error } = await supabaseClient
+            .table('경고') 
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('데이터 로드 실패:', error);
+            alert("데이터를 가져오지 못했습니다. 키값을 확인하세요!");
+            return;
+        }
+
+        cachedData = data;
+        renderTable(data);
+    }
+
+    function renderTable(data) {
+        if (!data || data.length === 0) return;
+
+        const header = document.getElementById('tableHeader');
+        const body = document.getElementById('tableBody');
+        
+        header.innerHTML = Object.keys(data[0]).map(key => `<th>${key}</th>`).join('');
+        body.innerHTML = data.map(row => `
+            <tr>
+                ${Object.values(row).map(val => `<td>${val}</td>`).join('')}
+            </tr>
+        `).join('');
+    }
+
+    function downloadTXT() {
+        if (cachedData.length === 0) return alert("데이터가 없습니다.");
+
+        let text = "=== 경고 기록 로그 ===\n\n";
+        cachedData.forEach(row => {
+            text += Object.entries(row).map(([k, v]) => `[${k}]: ${v}`).join(' | ') + "\n";
+        });
+
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'warning_logs.txt';
+        a.click();
+    }
+
+    fetchData();
+</script>
